@@ -381,4 +381,6 @@ config VMXNET3
 
 source "drivers/net/hyperv/Kconfig"
 
+source "drivers/net/dpdk/Kconfig"
+
 endif # NETDEVICES

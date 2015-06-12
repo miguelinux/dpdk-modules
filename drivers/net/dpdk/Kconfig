@@ -1,0 +1,56 @@
+#
+# Data Plane Development Kit
+#
+
+comment "Data Plane Development Kit (DPDK) drivers"
+	depends on DPDK
+
+menuconfig DPDK
+	bool "Data Plane Development Kit"
+	depends on NET && PCI
+	default n
+	---help---
+	  DPDK is a set of libraries and drivers for fast packet processing.
+	  It was designed to run on any processors knowing Intel x86 has been
+	  the first CPU to be supported.
+
+	  http://dpdk.org
+
+if DPDK
+
+config DPDK_IGB_UIO
+	tristate "UIO driver for Intel IGB PCI cards"
+	depends on UIO = m && m
+	default n
+	---help---
+	  To run any DPDK application, a suitable uio module can be loaded into
+	  the running kernel. In many cases, the standard uio_pci_generic module
+	  included in the linux kernel can provide the uio capability.
+
+	  As an alternative to the uio_pci_generic, the DPDK also includes the
+	  "igb_uio" module.
+
+	  If you compile this as module, it will be called igb_uio.
+
+	  Note:
+	  For some devices which lack support for legacy interrupts,
+	  e.g. virtual function (VF) devices, the igb_uio module may be needed
+	  in place of uio_pci_generic.
+
+	  Since DPDK release 1.7 onward provides VFIO support,
+	  use of UIO is optional for platforms that support using VFIO.
+
+config  DPDK_RTE_PCI_CONFIG
+	bool "PCI Config Space for high performance"
+	depends on DPDK_IGB_UIO
+	default n
+	---help---
+	  Special configuration in PCI Config Space for high performance.
+
+	  Select this option only if you have enabled RTE_PCI_CONFIG library
+	  option in dpdk software.
+
+
+source "drivers/net/dpdk/kni/Kconfig"
+
+endif # DPDK

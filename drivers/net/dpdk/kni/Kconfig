@@ -1,0 +1,58 @@
+#
+# DPDK Kernel NIC Interface
+#
+
+config  DPDK_KNI
+	tristate "Kernel Module for managing kni devices"
+	depends on m
+	---help---
+	  The Kernel NIC Interface (KNI) is a DPDK control plane solution that
+	  allows userspace applications to exchange packets with the kernel
+	  networking stack.
+
+	  http://dpdk.org/doc/guides/sample_app_ug/kernel_nic_interface.html
+
+config  DPDK_KNI_PREEMPT_DEFAULT
+	bool "Preempt KNI by default"
+	depends on DPDK_KNI
+	default y
+
+config  DPDK_KNI_KO_DEBUG
+	bool "Show KNI debug messages"
+	depends on DPDK_KNI
+	default n
+
+config  DPDK_KNI_VHOST
+	bool "Enable KNI working as a kernel vHost backend"
+	depends on DPDK_KNI
+	default n
+	---help---
+	  vHost is a kernel module usually working as the backend of virtio
+	  (a para- virtualization driver framework) to accelerate the traffic
+	  from the guest to the host.
+
+	  In the scenario where DPDK is running as fast path in the host,
+	  kni-vhost is an efficient path for the traffic.
+
+config  DPDK_KNI_VHOST_MAX_CACHE_SIZE
+	int "vHost max chache size"
+	depends on DPDK_KNI_VHOST
+	default 1024
+
+config  DPDK_KNI_VHOST_VNET_HDR_EN
+	bool "Enable vHost HDR (GSO)"
+	depends on DPDK_KNI_VHOST
+	default n
+	---help---
+	  Enables KVM virtio_net driver to allow guest to apass larger (GSO)
+	  packages.
+
+config  DPDK_KNI_VHOST_DEBUG_RX
+	bool "Rx vHost debug"
+	depends on DPDK_KNI_VHOST
+	default n
+
+config  DPDK_KNI_VHOST_DEBUG_TX
+	bool "Tx vHost debug"
+	depends on DPDK_KNI_VHOST
+	default n
