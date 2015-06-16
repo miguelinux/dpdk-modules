@@ -632,6 +632,17 @@ static int kni_net_set_mac(struct net_device *netdev, void *p)
 	return 0;
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
+static int kni_net_change_carrier(struct net_device *dev, bool new_carrier)
+{
+	if (new_carrier)
+		netif_carrier_on(dev);
+	else
+		netif_carrier_off(dev);
+	return 0;
+}
+#endif
+
 static const struct header_ops kni_net_header_ops = {
 	.create  = kni_net_header,
 	// TODO: find other way to rebuild
@@ -649,6 +660,9 @@ static const struct net_device_ops kni_net_netdev_ops = {
 	.ndo_get_stats = kni_net_stats,
 	.ndo_tx_timeout = kni_net_tx_timeout,
 	.ndo_set_mac_address = kni_net_set_mac,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
+	.ndo_change_carrier = kni_net_change_carrier,
+#endif
 };
 
 void
