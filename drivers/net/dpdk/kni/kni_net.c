@@ -600,20 +600,21 @@ kni_net_header(struct sk_buff *skb, struct net_device *dev,
 }
 
 
+// TODO: find other way to rebuild
 /*
  * Re-fill the eth header
  */
-static int
-kni_net_rebuild_header(struct sk_buff *skb)
-{
-	struct net_device *dev = skb->dev;
-	struct ethhdr *eth = (struct ethhdr *) skb->data;
-
-	memcpy(eth->h_source, dev->dev_addr, dev->addr_len);
-	memcpy(eth->h_dest, dev->dev_addr, dev->addr_len);
-
-	return 0;
-}
+//static int
+//kni_net_rebuild_header(struct sk_buff *skb)
+//{
+//	struct net_device *dev = skb->dev;
+//	struct ethhdr *eth = (struct ethhdr *) skb->data;
+//
+//	memcpy(eth->h_source, dev->dev_addr, dev->addr_len);
+//	memcpy(eth->h_dest, dev->dev_addr, dev->addr_len);
+//
+//	return 0;
+//}
 
 /**
  * kni_net_set_mac - Change the Ethernet Address of the KNI NIC
@@ -633,7 +634,8 @@ static int kni_net_set_mac(struct net_device *netdev, void *p)
 
 static const struct header_ops kni_net_header_ops = {
 	.create  = kni_net_header,
-	.rebuild = kni_net_rebuild_header,
+	// TODO: find other way to rebuild
+	//.rebuild = kni_net_rebuild_header,
 	.cache   = NULL,  /* disable caching */
 };
 
