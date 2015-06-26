@@ -336,7 +336,7 @@ except:
 }
 
 static int
-kni_sock_sndmsg(struct kiocb *iocb, struct socket *sock,
+kni_sock_sndmsg(struct socket *sock,
 	   struct msghdr *m, size_t total_len)
 {
  	struct kni_vhost_queue *q =
@@ -366,7 +366,7 @@ kni_sock_sndmsg(struct kiocb *iocb, struct socket *sock,
 }
 
 static int
-kni_sock_rcvmsg(struct kiocb *iocb, struct socket *sock,
+kni_sock_rcvmsg(struct socket *sock,
 	   struct msghdr *m, size_t len, int flags)
 {
 	int vnet_hdr_len = 0;
