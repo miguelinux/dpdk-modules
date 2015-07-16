@@ -645,14 +645,12 @@ kni_vhost_backend_init(struct kni_dev *kni)
 	}
 
 	/* cache init */
-	q->cache = (struct sk_buff*)
-		kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(struct sk_buff),
+	q->cache = kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(struct sk_buff),
 			GFP_KERNEL);
 	if (!q->cache)
 		goto free_fd;
 
-	fifo = (struct rte_kni_fifo*)
-		kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(void *)
+	fifo = kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(void *)
 			+ sizeof(struct rte_kni_fifo), GFP_KERNEL);
 	if (!fifo)
 		goto free_cache;
