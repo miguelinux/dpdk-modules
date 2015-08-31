@@ -31,11 +31,11 @@
 #include <linux/io.h>
 #include <linux/msi.h>
 #include <linux/version.h>
+#include <linux/slab.h>
 
 #ifdef CONFIG_XEN_DOM0
 #include <xen/xen.h>
 #endif
-
 #include "rte_pci_dev_features.h"
 
 #ifdef CONFIG_DPDK_RTE_PCI_CONFIG
