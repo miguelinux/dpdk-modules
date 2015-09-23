@@ -32,10 +32,13 @@ cp ${DPDK_EAL}/linuxapp/kni/ethtool/igb/kcompat.h ${KD}/kni/kcompact_igb.h
 cp ${DPDK_EAL}/linuxapp/kni/ethtool/ixgbe/*.h ${KD}/kni
 cp ${DPDK_EAL}/linuxapp/kni/ethtool/ixgbe/*.c ${KD}/kni
 
-#rm ${KD}/kni/compat.h
-#rm ${KD}/kni/igb_ptp.c
-#rm ${KD}/kni/kcompact_igb.h
-#rm ${KD}/kni/kcompat_ethtool.c
+# Not included in Makefile
+rm ${KD}/kni/igb_ptp.c
+# Nobody uset them
+rm ${KD}/kni/kcompact_igb.h
+rm ${KD}/kni/kcompat_ethtool.c
+# Refactor to not use it
+rm ${KD}/kni/compat.h
 
 git add -A
 git commit -m "QA copy"
