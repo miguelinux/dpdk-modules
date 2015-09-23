@@ -5,6 +5,7 @@ REPO=$(mktemp -d)
 
 git -C ${REPO} init
 mkdir -p ${REPO}/drivers/net
+cp .gitignore ${REPO}
 
 # Get Kconfig & Makefile from kernel
 git checkout ${LVER} drivers/net/Kconfig drivers/net/Makefile
@@ -26,5 +27,7 @@ cp drivers/net/Kconfig drivers/net/Makefile ${REPO}/drivers/net
 git -C ${REPO} add --all
 git -C ${REPO} commit -s -m "Integrate Kconfig and Makefiles"
 
-git -C ${REPO} format-pach --start-number 5001 -2
+git -C ${REPO} format-patch --start-number 5001 -2
+
+cp ${REPO}/500* .
 
