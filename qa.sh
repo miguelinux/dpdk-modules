@@ -22,6 +22,9 @@ done
 
 cp ${DPDK_EAL}/linuxapp/igb_uio/igb_uio.c ${KD}
 
+cp ${DPDK_EAL}/common/include/rte_pci_dev_ids.h ${KD}/kni
+cp ${DPDK_EAL}/linuxapp/eal/include/exec-env/rte_kni_common.h ${KD}/kni
+
 cp ${DPDK_EAL}/linuxapp/kni/*.c ${KD}/kni
 cp ${DPDK_EAL}/linuxapp/kni/*.h ${KD}/kni
 
