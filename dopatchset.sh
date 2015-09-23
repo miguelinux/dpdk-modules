@@ -11,6 +11,7 @@ git checkout ${LVER} drivers/net/Kconfig drivers/net/Makefile
 # Copy them to new repo
 cp drivers/net/Kconfig drivers/net/Makefile ${REPO}/drivers/net
 # Restore them
+git reset HEAD drivers/net/Kconfig drivers/net/Makefile
 git checkout drivers/net/Kconfig drivers/net/Makefile
 
 git -C ${REPO} add --all
