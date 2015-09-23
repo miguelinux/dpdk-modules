@@ -36,6 +36,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 
+
 #include "rte_kni_common.h"
 #include "kni_fifo.h"
 #include "kni_dev.h"
@@ -87,7 +88,7 @@ kni_net_open(struct net_device *dev)
 	req.if_up = 1;
 	ret = kni_net_process_request(kni, &req);
 
-	return (ret == 0 ? req.result : ret);
+	return (ret == 0) ? req.result : ret;
 }
 
 static int
@@ -106,7 +107,7 @@ kni_net_release(struct net_device *dev)
 	req.if_up = 0;
 	ret = kni_net_process_request(kni, &req);
 
-	return (ret == 0 ? req.result : ret);
+	return (ret == 0) ? req.result : ret;
 }
 
 /*

@@ -32,6 +32,7 @@
 #include "rte_kni_common.h"
 #include "kni_dev.h"
 
+
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Intel Corporation");
 MODULE_DESCRIPTION("Kernel Module for managing kni devices");
@@ -605,4 +606,3 @@ MODULE_PARM_DESC(kthread_mode,
 "    multiple  Multiple kernel thread mode enabled.\n"
 "\n"
 );
-

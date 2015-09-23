@@ -1498,11 +1498,11 @@ static void igb_loopback_cleanup(struct igb_adapter *adapter)
 		reg = E1000_READ_REG(hw, E1000_MPHY_ADDR_CTL);
                 reg = (reg & E1000_MPHY_ADDR_CTL_OFFSET_MASK ) |
                         E1000_MPHY_PCS_CLK_REG_OFFSET;
-       	E1000_WRITE_REG(hw, E1000_MPHY_ADDR_CTL, reg);
+	E1000_WRITE_REG(hw, E1000_MPHY_ADDR_CTL, reg);
 
 		reg = E1000_READ_REG(hw, E1000_MPHY_DATA);
-       	reg &= ~E1000_MPHY_PCS_CLK_REG_DIGINELBEN;
-       	E1000_WRITE_REG(hw, E1000_MPHY_DATA, reg);
+	reg &= ~E1000_MPHY_PCS_CLK_REG_DIGINELBEN;
+	E1000_WRITE_REG(hw, E1000_MPHY_DATA, reg);
 	}
 
 	rctl = E1000_READ_REG(hw, E1000_RCTL);
