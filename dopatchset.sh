@@ -4,7 +4,7 @@ LVER=linux-4.2.y
 REPO=$(mktemp -d)
 
 git -C ${REPO} init
-mkdir ${REPO}/drivers/net
+mkdir -p ${REPO}/drivers/net
 
 # Get Kconfig & Makefile from kernel
 git checkout ${LVER} drivers/net/Kconfig drivers/net/Makefile
