@@ -1961,7 +1961,7 @@ static int igb_set_coalesce(struct net_device *netdev,
 	     (ec->rx_coalesce_usecs < IGB_MIN_ITR_USECS)) ||
 	    (ec->rx_coalesce_usecs == 2))
 	    {
-	    	printk("set_coalesce:invalid parameter..");
+		printk("set_coalesce:invalid parameter..");
 		return -EINVAL;
 	}
 
