@@ -632,7 +632,7 @@ kni_vhost_backend_init(struct kni_dev *kni)
 		return -1;
 
 	if (!(q = (struct kni_vhost_queue *)sk_alloc(
-		      net, AF_UNSPEC, GFP_KERNEL, &kni_raw_proto)))
+		      net, AF_UNSPEC, GFP_KERNEL, &kni_raw_proto, 0)))
 		return -ENOMEM;
 
 	err = sock_create_lite(AF_UNSPEC, SOCK_RAW, IPPROTO_RAW, &q->sock);
