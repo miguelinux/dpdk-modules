@@ -4,6 +4,7 @@ DPDK=$1
 DPDK_EAL=${DPDK}/lib/librte_eal
 #Kernel DPDK
 KD=drivers/net/dpdk
+LF=/tmp/dpdk-log
 
 # Delete previoes Q/A branch
 git branch -D qa
@@ -13,6 +14,8 @@ git checkout -b qa master
 
 # Pull the lastes DPDK repo
 git -C ${DPDK} pull
+
+
 
 
 for f in rte_pci_dev_feature_defs.h  rte_pci_dev_features.h
