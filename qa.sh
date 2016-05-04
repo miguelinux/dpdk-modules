@@ -1,4 +1,7 @@
 #!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# ex: ts=8 sw=4 sts=4 et filetype=sh
+#
 
 DPDK=$1
 DPDK_EAL=${DPDK}/lib/librte_eal
@@ -6,21 +9,29 @@ DPDK_EAL=${DPDK}/lib/librte_eal
 KD=drivers/net/dpdk
 LF=/tmp/dpdk-log
 
+# Be sure we are in master
+git checkout master
+
 # Delete previoes Q/A branch
 git branch -D qa
 
 # Create new branch to do QA
 git checkout -b qa master
 
+
+if [ -d /usr/share/clear/bundles ] ; then
+    GIT=gitp
+else
+    GIT=git
+fi
 # Pull the lastes DPDK repo
-git -C ${DPDK} pull
-
-
+echo $GIT -C ${DPDK} pull
+$GIT -C ${DPDK} pull
 
 
 for f in rte_pci_dev_feature_defs.h  rte_pci_dev_features.h
 do
-	cp ${DPDK_EAL}/common/include/${f} ${KD}
+    cp ${DPDK_EAL}/common/include/${f} ${KD}
 done
 
 cp ${DPDK_EAL}/linuxapp/igb_uio/igb_uio.c ${KD}
