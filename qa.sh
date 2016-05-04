@@ -4,6 +4,12 @@
 #
 
 DPDK=$1
+
+if [ -z "$DPDK" ] ; then
+    echo "Missing first argument to know where DPDK is"
+    exit 1;
+fi
+
 DPDK_EAL=${DPDK}/lib/librte_eal
 #Kernel DPDK
 KD=drivers/net/dpdk
