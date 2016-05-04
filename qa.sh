@@ -26,13 +26,13 @@ git checkout -b qa master
 
 
 if [ -d /usr/share/clear/bundles ] ; then
-    GIT=gitp
+    export GIT_PROXY_COMMAND=$HOME/bin/git-proxy
+    git -C ${DPDK} pull
+    unset GIT_PROXY_COMMAND
 else
-    GIT=git
+    git -C ${DPDK} pull
 fi
 # Pull the lastes DPDK repo
-echo $GIT -C ${DPDK} pull
-$GIT -C ${DPDK} pull
 
 
 for f in rte_pci_dev_feature_defs.h  rte_pci_dev_features.h
