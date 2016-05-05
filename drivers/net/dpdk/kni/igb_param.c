@@ -736,7 +736,7 @@ void igb_check_options(struct igb_adapter *adapter)
 				.err  = "using default of "__MODULE_STRING(IGB_DMAC_DISABLE),
 				.def  = IGB_DMAC_DISABLE,
 				.arg = { .l = { .nr = 13,
-						.p = list
+					 	.p = list
 					}
 				}
 			};

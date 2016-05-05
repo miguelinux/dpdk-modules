@@ -1628,7 +1628,7 @@ static int igb_get_i2c_data(void *data)
 	struct e1000_hw *hw = &adapter->hw;
 	s32 i2cctl = E1000_READ_REG(hw, E1000_I2CPARAMS);
 
-	return ((i2cctl & E1000_I2C_DATA_IN) != 0);
+	return (i2cctl & E1000_I2C_DATA_IN) != 0;
 }
 
 /* igb_set_i2c_data - Sets the I2C data bit
@@ -1690,7 +1690,7 @@ static int igb_get_i2c_clk(void *data)
 	struct e1000_hw *hw = &adapter->hw;
 	s32 i2cctl = E1000_READ_REG(hw, E1000_I2CPARAMS);
 
-	return ((i2cctl & E1000_I2C_CLK_IN) != 0);
+	return (i2cctl & E1000_I2C_CLK_IN) != 0;
 }
 
 static const struct i2c_algo_bit_data igb_i2c_algo = {
@@ -2198,9 +2198,14 @@ static int igb_ndo_fdb_dump(struct sk_buff *skb,
 #endif /* USE_DEFAULT_FDB_DEL_DUMP */
 
 #ifdef HAVE_BRIDGE_ATTRIBS
+#ifdef HAVE_NDO_BRIDGE_SET_DEL_LINK_FLAGS
 static int igb_ndo_bridge_setlink(struct net_device *dev,
 				  struct nlmsghdr *nlh,
 				  u16 flags)
+#else
+static int igb_ndo_bridge_setlink(struct net_device *dev,
+				  struct nlmsghdr *nlh)
+#endif /* HAVE_NDO_BRIDGE_SET_DEL_LINK_FLAGS */
 {
 	struct igb_adapter *adapter = netdev_priv(dev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -2245,9 +2250,14 @@ static int igb_ndo_bridge_setlink(struct net_device *dev,
 }
 
 #ifdef HAVE_BRIDGE_FILTER
+#ifdef HAVE_NDO_BRIDGE_GETLINK_NLFLAGS
 static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 				  struct net_device *dev, u32 filter_mask,
 				  int nlflags)
+#else
+static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+				  struct net_device *dev, u32 filter_mask)
+#endif /* HAVE_NDO_BRIDGE_GETLINK_NLFLAGS */
 #else
 static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 				  struct net_device *dev)
@@ -2264,12 +2274,20 @@ static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 	else
 		mode = BRIDGE_MODE_VEPA;
 
-#ifdef HAVE_NDO_FDB_ADD_VID
+#ifdef HAVE_NDO_DFLT_BRIDGE_ADD_MASK
+#ifdef HAVE_NDO_BRIDGE_GETLINK_NLFLAGS
+#ifdef HAVE_NDO_BRIDGE_GETLINK_FILTER_MASK_VLAN_FILL
 	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0,
 				nlflags, filter_mask, NULL);
 #else
+	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0, nlflags);
+#endif /* HAVE_NDO_BRIDGE_GETLINK_FILTER_MASK_VLAN_FILL */
+#else
+	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0);
+#endif /* HAVE_NDO_BRIDGE_GETLINK_NLFLAGS */
+#else
 	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode);
-#endif /* HAVE_NDO_FDB_ADD_VID */
+#endif /* HAVE_NDO_DFLT_BRIDGE_ADD_MASK */
 }
 #endif /* HAVE_BRIDGE_ATTRIBS */
 #endif /* NTF_SELF */
@@ -5482,9 +5500,9 @@ netdev_tx_t igb_xmit_frame_ring(struct sk_buff *skb,
 	}
 #endif /* HAVE_PTP_1588_CLOCK */
 
-	if (skb_vlan_tag_present(skb)) {
+	if (vlan_tx_tag_present(skb)) {
 		tx_flags |= IGB_TX_FLAGS_VLAN;
-		tx_flags |= (skb_vlan_tag_get(skb) << IGB_TX_FLAGS_VLAN_SHIFT);
+		tx_flags |= (vlan_tx_tag_get(skb) << IGB_TX_FLAGS_VLAN_SHIFT);
 	}
 
 	/* record initial flags and protocol */
@@ -8026,7 +8044,7 @@ static bool igb_clean_rx_irq(struct igb_q_vector *q_vector, int budget)
 	igb_lro_flush_all(q_vector);
 
 #endif /* IGB_NO_LRO */
-	return (total_packets < budget);
+	return total_packets < budget;
 }
 #else /* CONFIG_IGB_DISABLE_PACKET_SPLIT */
 /**
@@ -8334,7 +8352,7 @@ static bool igb_clean_rx_irq(struct igb_q_vector *q_vector, int budget)
 	igb_lro_flush_all(q_vector);
 
 #endif /* IGB_NO_LRO */
-	return (total_packets < budget);
+	return total_packets < budget;
 }
 #endif /* CONFIG_IGB_DISABLE_PACKET_SPLIT */
 
