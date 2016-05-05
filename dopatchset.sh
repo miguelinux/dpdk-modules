@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LVER=linux-4.2.y
+LVER=linux-4.5.3
 REPO=$(mktemp -d)
 
 git -C ${REPO} init
