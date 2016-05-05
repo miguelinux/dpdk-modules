@@ -33,7 +33,7 @@
 #include <linux/if_tun.h>
 #include <linux/version.h>
 
-
+#include "compat.h"
 #include "kni_dev.h"
 #include "kni_fifo.h"
 
@@ -84,7 +84,11 @@ kni_vhost_net_tx(struct kni_dev *kni, struct msghdr *m,
 	int ret;
 
 	KNI_DBG_TX("tx offset=%d, len=%d, iovlen=%d\n",
+#ifdef HAVE_IOV_ITER_MSGHDR
 		   offset, len, (int)m->msg_iter.iov->iov_len);
+#else
+		   offset, len, (int)m->msg_iov->iov_len);
+#endif
 
 	/**
 	 * Check if it has at least one free entry in tx_q and
@@ -108,7 +112,11 @@ kni_vhost_net_tx(struct kni_dev *kni, struct msghdr *m,
 		data_kva = pkt_kva->buf_addr + pkt_kva->data_off
 		           - kni->mbuf_va + kni->mbuf_kva;
 
+#ifdef HAVE_IOV_ITER_MSGHDR
 		copy_from_iter(data_kva, len, &m->msg_iter);
+#else
+		memcpy_fromiovecend(data_kva, m->msg_iov, offset, len);
+#endif
 
 		if (unlikely(len < ETH_ZLEN)) {
 			memset(data_kva + len, 0, ETH_ZLEN - len);
@@ -178,10 +186,18 @@ kni_vhost_net_rx(struct kni_dev *kni, struct msghdr *m,
 		goto drop;
 
 	KNI_DBG_RX("rx offset=%d, len=%d, pkt_len=%d, iovlen=%d\n",
+#ifdef HAVE_IOV_ITER_MSGHDR
 		   offset, len, pkt_len, (int)m->msg_iter.iov->iov_len);
+#else
+		   offset, len, pkt_len, (int)m->msg_iov->iov_len);
+#endif
 
 	data_kva = kva->buf_addr + kva->data_off - kni->mbuf_va + kni->mbuf_kva;
+#ifdef HAVE_IOV_ITER_MSGHDR
 	if (unlikely(copy_to_iter(data_kva, pkt_len, &m->msg_iter)))
+#else
+	if (unlikely(memcpy_toiovecend(m->msg_iov, data_kva, offset, pkt_len)))
+#endif
 		goto drop;
 
 	/* Update statistics */
@@ -235,7 +251,11 @@ kni_sock_poll(struct file *file, struct socket *sock, poll_table * wait)
 		mask |= POLLIN | POLLRDNORM;
 
 	if (sock_writeable(&q->sk) ||
+#ifdef SOCKWQ_ASYNC_NOSPACE
+	    (!test_and_set_bit(SOCKWQ_ASYNC_NOSPACE, &q->sock->flags) &&
+#else
 	    (!test_and_set_bit(SOCK_ASYNC_NOSPACE, &q->sock->flags) &&
+#endif
 	     sock_writeable(&q->sk)))
 		mask |= POLLOUT | POLLWRNORM;
 
@@ -337,8 +357,13 @@ except:
 }
 
 static int
+#ifdef HAVE_KIOCB_MSG_PARAM
+kni_sock_sndmsg(struct kiocb *iocb, struct socket *sock,
+	   struct msghdr *m, size_t total_len)
+#else
 kni_sock_sndmsg(struct socket *sock,
 	   struct msghdr *m, size_t total_len)
+#endif /* HAVE_KIOCB_MSG_PARAM */
 {
 	struct kni_vhost_queue *q =
 		container_of(sock->sk, struct kni_vhost_queue, sk);
@@ -349,7 +374,11 @@ kni_sock_sndmsg(struct socket *sock,
 		return 0;
 
 	KNI_DBG_TX("kni_sndmsg len %ld, flags 0x%08x, nb_iov %d\n",
+#ifdef HAVE_IOV_ITER_MSGHDR
 		   len, q->flags, (int)m->msg_iter.iov->iov_len);
+#else
+		   len, q->flags, (int)m->msg_iovlen);
+#endif
 
 #ifdef CONFIG_DPDK_KNI_VHOST_VNET_HDR_EN
 	if (likely(q->flags & IFF_VNET_HDR)) {
@@ -367,8 +396,13 @@ kni_sock_sndmsg(struct socket *sock,
 }
 
 static int
+#ifdef HAVE_KIOCB_MSG_PARAM
+kni_sock_rcvmsg(struct kiocb *iocb, struct socket *sock,
+	   struct msghdr *m, size_t len, int flags)
+#else
 kni_sock_rcvmsg(struct socket *sock,
 	   struct msghdr *m, size_t len, int flags)
+#endif /* HAVE_KIOCB_MSG_PARAM */
 {
 	int vnet_hdr_len = 0;
 	int pkt_len = 0;
@@ -397,14 +431,19 @@ kni_sock_rcvmsg(struct socket *sock,
 
 #ifdef CONFIG_DPDK_KNI_VHOST_VNET_HDR_EN
 	/* no need to copy hdr when no pkt received */
+#ifdef HAVE_IOV_ITER_MSGHDR
 	if (unlikely(copy_to_iter((void *)&vnet_hdr, vnet_hdr_len,
 		&m->msg_iter)))
+#else
+	if (unlikely(memcpy_toiovecend(m->msg_iov,
+		(void *)&vnet_hdr, 0, vnet_hdr_len)))
+#endif /* HAVE_IOV_ITER_MSGHDR */
 		return -EFAULT;
-#endif
+#endif /* CONFIG_DPDK_KNI_VHOST_VNET_HDR_EN */
 	KNI_DBG_RX("kni_rcvmsg expect_len %ld, flags 0x%08x, pkt_len %d\n",
 		   (unsigned long)len, q->flags, pkt_len);
 
-	return (pkt_len + vnet_hdr_len);
+	return pkt_len + vnet_hdr_len;
 }
 
 /* dummy tap like ioctl */
@@ -584,8 +623,11 @@ kni_sk_write_space(struct sock *sk)
 	wait_queue_head_t *wqueue;
 
 	if (!sock_writeable(sk) ||
-	    !test_and_clear_bit(SOCK_ASYNC_NOSPACE,
-				&sk->sk_socket->flags))
+#ifdef SOCKWQ_ASYNC_NOSPACE
+	    !test_and_clear_bit(SOCKWQ_ASYNC_NOSPACE, &sk->sk_socket->flags))
+#else
+	    !test_and_clear_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags))
+#endif
 		return;
 	wqueue = sk_sleep(sk);
 	if (wqueue && waitqueue_active(wqueue))
@@ -631,8 +673,14 @@ kni_vhost_backend_init(struct kni_dev *kni)
 	if (kni->vhost_queue != NULL)
 		return -1;
 
-	if (!(q = (struct kni_vhost_queue *)sk_alloc(
-		      net, AF_UNSPEC, GFP_KERNEL, &kni_raw_proto, 0)))
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+	q = (struct kni_vhost_queue *)sk_alloc(net, AF_UNSPEC, GFP_KERNEL,
+			&kni_raw_proto, 0);
+#else
+	q = (struct kni_vhost_queue *)sk_alloc(net, AF_UNSPEC, GFP_KERNEL,
+			&kni_raw_proto);
+#endif
+	if (!q)
 		return -ENOMEM;
 
 	err = sock_create_lite(AF_UNSPEC, SOCK_RAW, IPPROTO_RAW, &q->sock);
@@ -647,7 +695,7 @@ kni_vhost_backend_init(struct kni_dev *kni)
 
 	/* cache init */
 	q->cache = kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(struct sk_buff),
-			GFP_KERNEL);
+			   GFP_KERNEL);
 	if (!q->cache)
 		goto free_fd;
 
