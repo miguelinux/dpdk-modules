@@ -40,16 +40,6 @@ config DPDK_IGB_UIO
 	  Since DPDK release 1.7 onward provides VFIO support,
 	  use of UIO is optional for platforms that support using VFIO.
 
-config  DPDK_RTE_PCI_CONFIG
-	bool "PCI Config Space for high performance"
-	depends on DPDK_IGB_UIO
-	default n
-	---help---
-	  Special configuration in PCI Config Space for high performance.
-
-	  Select this option only if you have enabled RTE_PCI_CONFIG library
-	  option in dpdk software.
-
 
 source "drivers/net/dpdk/kni/Kconfig"
 
