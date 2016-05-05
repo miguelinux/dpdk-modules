@@ -36,7 +36,7 @@
 #include <net/sock.h>
 #endif
 
-#include "rte_kni_common.h"
+#include <exec-env/rte_kni_common.h>
 #define KNI_KTHREAD_RESCHEDULE_INTERVAL 5 /* us */
 
 /**

@@ -25,7 +25,7 @@
 #ifndef _KNI_FIFO_H_
 #define _KNI_FIFO_H_
 
-#include "rte_kni_common.h"
+#include <exec-env/rte_kni_common.h>
 
 /**
  * Adds num elements into the fifo. Return the number actually written
