@@ -5,7 +5,7 @@
 obj-$(CONFIG_DPDK_KNI)       += rte_kni.o
 
 rte_kni-y := ixgbe_main.o ixgbe_api.o ixgbe_common.o ixgbe_ethtool.o \
-		ixgbe_82599.o ixgbe_82598.o ixgbe_x540.o ixgbe_phy.o kcompat.o \
+		ixgbe_82599.o ixgbe_82598.o ixgbe_x540.o ixgbe_phy.o \
 		\
 		e1000_82575.o e1000_i210.o e1000_api.o e1000_mac.o \
 		e1000_manage.o e1000_mbx.o e1000_nvm.o e1000_phy.o \
