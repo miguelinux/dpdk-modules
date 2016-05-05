@@ -59,7 +59,7 @@
 #ifndef _RTE_PCI_DEV_FEATURES_H
 #define _RTE_PCI_DEV_FEATURES_H
 
-#include "rte_pci_dev_feature_defs.h"
+#include <rte_pci_dev_feature_defs.h>
 
 #define RTE_INTR_MODE_NONE_NAME "none"
 #define RTE_INTR_MODE_LEGACY_NAME "legacy"
