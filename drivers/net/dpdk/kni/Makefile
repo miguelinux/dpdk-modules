@@ -2,6 +2,8 @@
 # Makefile for the DPDK Kernel NIC Interface
 #
 
+ccflags-y := -I$(src)
+
 obj-$(CONFIG_DPDK_KNI)       += rte_kni.o
 
 rte_kni-y := ixgbe_main.o ixgbe_api.o ixgbe_common.o ixgbe_ethtool.o \
