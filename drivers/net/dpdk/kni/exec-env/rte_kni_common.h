@@ -110,7 +110,7 @@ struct rte_kni_fifo {
  * Padding is necessary to assure the offsets of these fields
  */
 struct rte_kni_mbuf {
-	void *buf_addr __attribute__((__aligned__(RTE_CACHE_LINE_SIZE)));
+	void *buf_addr __attribute__((__aligned__(CONFIG_DPDK_CACHE_LINE_SIZE)));
 	char pad0[10];
 	uint16_t data_off;      /**< Start address of data in segment buffer. */
 	char pad1[2];
