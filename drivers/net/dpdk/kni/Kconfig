@@ -2,6 +2,10 @@
 # DPDK Kernel NIC Interface
 #
 
+config  DPDK_CACHE_LINE_SIZE
+	int "Machine's cache line size"
+	default 64
+
 config  DPDK_KNI
 	tristate "Kernel Module for managing kni devices"
 	depends on m

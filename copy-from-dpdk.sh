@@ -29,6 +29,8 @@ cp ${DPDK_EAL}/linuxapp/igb_uio/compat.h ${KD}
 cp ${DPDK_EAL}/common/include/rte_pci_dev_ids.h ${KD}/kni
 cp ${DPDK_EAL}/linuxapp/eal/include/exec-env/rte_kni_common.h ${KD}/kni/exec-env
 
+sed -i "s/RTE_CACHE_LINE_SIZE/CONFIG_DPDK_CACHE_LINE_SIZE/g"  ${KD}/kni/exec-env
+
 cp ${DPDK_EAL}/linuxapp/kni/*.c ${KD}/kni
 cp ${DPDK_EAL}/linuxapp/kni/*.h ${KD}/kni
 
