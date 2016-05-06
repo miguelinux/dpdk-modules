@@ -21,11 +21,11 @@ git -C ${REPO} commit -s -m "${LVER} Makefile & Kconfig"
 # Copy dpdk sources
 cp -r  drivers/net/dpdk ${REPO}/drivers/net
 git -C ${REPO} add --all
-git -C ${REPO} commit -s -m "Add DPDK source files"
+git -C ${REPO} commit -s -m "dpdk: add source files"
 
 cp drivers/net/Kconfig drivers/net/Makefile ${REPO}/drivers/net
 git -C ${REPO} add --all
-git -C ${REPO} commit -s -m "Integrate Kconfig and Makefiles"
+git -C ${REPO} commit -s -m "dpdk: integrate Kconfig and Makefiles"
 
 git -C ${REPO} format-patch --start-number 5001 -2
 
